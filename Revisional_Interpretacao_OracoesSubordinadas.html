@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revisional — Interpretação & Orações Subordinadas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F0E4;
+    --navy:#1E2A44;
+    --orange:#C1550C;
+    --yellow:#E9B949;
+    --green:#3F6E4E;
+    --red:#B0392E;
+    --line:#d8cfba;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(30,42,68,0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--navy);
+    font-family:'Inter',sans-serif;
+    padding-bottom:80px;
+  }
+  .wrap{ max-width: 880px; margin:0 auto; padding: 0 20px; }
+
+  /* ---------- HEADER (passport-style) ---------- */
+  header.hero{
+    background:var(--navy);
+    color:var(--paper);
+    padding: 38px 0 34px;
+    position:relative;
+    overflow:hidden;
+    border-bottom: 6px solid var(--orange);
+  }
+  header.hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: repeating-linear-gradient(135deg, rgba(233,185,73,0.06) 0 2px, transparent 2px 14px);
+  }
+  header.hero .wrap{ position:relative; }
+  .eyebrow{
+    font-family:'Caveat',cursive;
+    font-size:1.4rem;
+    color:var(--yellow);
+    margin:0 0 2px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size: clamp(1.8rem, 4vw, 2.7rem);
+    margin: 0 0 8px;
+    line-height:1.1;
+  }
+  header.hero p.sub{
+    margin:0;
+    max-width:56ch;
+    color:#d9d3c2;
+    font-size:0.98rem;
+  }
+
+  /* ---------- STICKY SCORE BAR ---------- */
+  .scorebar{
+    position: sticky; top:0; z-index: 20;
+    background: rgba(245,240,228,0.96);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  .scorebar .inner{
+    max-width:880px; margin:0 auto; padding: 10px 20px;
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+  .score-stat{ font-size:0.85rem; color:var(--navy); }
+  .score-stat b{ font-family:'Fraunces',serif; font-size:1.05rem; }
+  .progress-track{
+    flex:1; min-width:120px; height:8px; border-radius:6px;
+    background:#e4dcc7; overflow:hidden; border:1px solid var(--line);
+  }
+  .progress-fill{
+    height:100%; background:linear-gradient(90deg,var(--orange),var(--yellow));
+    width:0%; transition:width .3s ease;
+  }
+  .reset-btn{
+    border:1px solid var(--navy); background:transparent; color:var(--navy);
+    font-family:'Inter',sans-serif; font-size:0.78rem; font-weight:600;
+    padding:6px 12px; border-radius:20px; cursor:pointer; white-space:nowrap;
+  }
+  .reset-btn:hover{ background:var(--navy); color:var(--paper); }
+
+  /* ---------- FILTERS ---------- */
+  .filters{
+    display:flex; gap:8px; flex-wrap:wrap;
+    margin: 22px 0 6px;
+  }
+  .filter-btn{
+    font-family:'Inter',sans-serif; font-size:0.82rem; font-weight:600;
+    padding:8px 14px; border-radius:20px;
+    border:1.5px solid var(--navy); background:transparent; color:var(--navy);
+    cursor:pointer; transition: all .15s ease;
+  }
+  .filter-btn.active{ background:var(--navy); color:var(--paper); }
+  .filter-btn:hover:not(.active){ background:rgba(30,42,68,0.08); }
+
+  /* ---------- TEXT CARD ---------- */
+  .text-card{
+    background:#fffdf8; border:1px solid var(--line); border-left:5px solid var(--yellow);
+    border-radius:6px; padding:22px 26px; margin:26px 0;
+  }
+  .text-card h2{
+    font-family:'Fraunces',serif; font-size:1.3rem; margin:0 0 4px; color:var(--navy);
+  }
+  .text-card .note{
+    font-family:'Caveat',cursive; font-size:1.15rem; color:var(--orange); margin:0 0 14px;
+  }
+  .text-card p{ line-height:1.7; margin:0 0 12px; font-size:0.96rem; text-align:justify; }
+  .text-card details summary{ cursor:pointer; font-weight:600; color:var(--orange); font-size:0.88rem; }
+
+  /* ---------- SECTION LABEL ---------- */
+  .section-label{
+    font-family:'Fraunces',serif; font-weight:600; font-size:1.4rem;
+    color:var(--navy); margin: 34px 0 14px;
+    padding-bottom:8px; border-bottom:2px solid var(--navy);
+  }
+
+  /* ---------- QUESTION CARD ---------- */
+  .qcard{
+    background:#fffdf8;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding: 20px 22px;
+    margin-bottom:16px;
+    transition: box-shadow .2s ease;
+  }
+  .qcard.answered-correct{ border-left:5px solid var(--green); }
+  .qcard.answered-wrong{ border-left:5px solid var(--red); }
+  .qcard.unanswered{ border-left:5px solid var(--line); }
+
+  .qmeta{
+    display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;
+  }
+  .qnum{
+    font-family:'Fraunces',serif; font-weight:700; color:var(--orange); font-size:1.05rem;
+  }
+  .tag{
+    font-size:0.68rem; font-weight:700; letter-spacing:0.03em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; color:#fff;
+  }
+  .tag.interpretacao{ background:#4A6FA5; }
+  .tag.subordinadas{ background:var(--orange); }
+  .tag.prova{ background:var(--navy); }
+
+  .qtext{ font-size:1rem; line-height:1.55; margin:0 0 14px; color:var(--navy); }
+
+  .options{ display:flex; flex-direction:column; gap:8px; }
+  .opt{
+    display:flex; align-items:flex-start; gap:10px;
+    text-align:left; width:100%;
+    background:var(--paper); border:1.5px solid var(--line); border-radius:6px;
+    padding:10px 14px; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.92rem;
+    color:var(--navy); transition: all .12s ease;
+  }
+  .opt:hover:not(.locked){ border-color:var(--orange); background:#fbf3e8; }
+  .opt .letter{ font-weight:700; color:var(--orange); flex-shrink:0; }
+  .opt.correct{ background:#e6efe8; border-color:var(--green); }
+  .opt.correct .letter{ color:var(--green); }
+  .opt.wrong{ background:#f5e5e2; border-color:var(--red); }
+  .opt.wrong .letter{ color:var(--red); }
+  .opt.locked{ cursor:default; }
+  .opt.dim{ opacity:0.55; }
+
+  .feedback{
+    margin-top:14px; padding:12px 16px; border-radius:6px;
+    font-size:0.9rem; line-height:1.5; display:none;
+  }
+  .feedback.show{ display:block; }
+  .feedback.correct{ background:#e6efe8; color:#26492f; border:1px solid #bcd7c3; }
+  .feedback.wrong{ background:#f5e5e2; color:#7a2a20; border:1px solid #e3bcb4; }
+  .feedback b{ display:block; margin-bottom:3px; font-family:'Fraunces',serif; font-size:0.95rem;}
+
+  .hidden{ display:none !important; }
+
+  footer{
+    text-align:center; padding: 40px 20px 10px; color:#8a8370; font-size:0.8rem;
+  }
+
+  @media (max-width:600px){
+    .qcard{ padding:16px; }
+    header.hero{ padding:28px 0 26px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Caderno de revisão — Língua Portuguesa</p>
+    <h1>Interpretação de Texto &amp; Orações Subordinadas</h1>
+    <p class="sub">70 questões para revisar antes da prova, cada uma com uma explicação da matéria por trás da resposta certa. Responda, confira e leia a explicação.</p>
+  </div>
+</header>
+
+<div class="scorebar">
+  <div class="inner">
+    <div class="score-stat">Respondidas: <b id="statAnswered">0</b>/<span id="statTotal">70</span></div>
+    <div class="score-stat">Acertos: <b id="statCorrect">0</b></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <button class="reset-btn" id="resetBtn">Reiniciar progresso</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="todas">Todas (70)</button>
+    <button class="filter-btn" data-filter="interpretacao">Interpretação</button>
+    <button class="filter-btn" data-filter="subordinadas">Orações Subordinadas</button>
+  </div>
+
+  <div class="text-card">
+    <h2>O celular na mochila</h2>
+    <p class="note">texto-base de algumas questões de interpretação abaixo</p>
+    <details open>
+      <summary>Mostrar/ocultar texto</summary>
+      <div style="margin-top:14px;">
+        <p>Quando a diretora anunciou que a escola guardaria os celulares dos alunos durante o intervalo, a turma reagiu como se tivesse perdido um braço. Rafael, que sempre checava as notificações antes mesmo de abrir os olhos pela manhã, sentiu um vazio estranho no bolso da bermuda.</p>
+        <p>Nos primeiros dias, ninguém sabia muito bem o que fazer com as mãos. Alguns alunos ficavam parados no pátio, olhando para o nada, como se esperassem que a tela reaparecesse por mágica. Outros, no entanto, começaram a redescobrir coisas que pareciam esquecidas: uma partida de queimada, uma conversa mais longa que três frases, um livro emprestado pela biblioteca.</p>
+        <p>Rafael notou que, sem o celular, prestava mais atenção nos detalhes ao seu redor. Reparou que a merendeira sempre cumprimentava os alunos pelo nome, que havia um pé de goiaba esquecido no canto do pátio e que seu colega de carteira contava piadas surpreendentemente engraçadas quando tinha a chance de falar sem ser interrompido por uma mensagem.</p>
+        <p>Passado um mês, algo mudou. Embora ainda sentisse falta de checar o celular a cada intervalo, Rafael percebeu que os dias na escola pareciam mais longos, no bom sentido: como se coubessem mais coisas dentro deles. Ele não diria isso em voz alta para os colegas, mas, secretamente, começou a gostar da ideia de guardar o aparelho — pelo menos por algumas horas.</p>
+      </div>
+    </details>
+  </div>
+
+  <div id="questionsRoot"></div>
+
+</div>
+
+<footer>Feito para revisão — 9º ano · Língua Portuguesa</footer>
+
+<script>
+const QUESTIONS = [
+{ id:"s28", topic:"subordinadas", prova:false,
+  question:"Em \"O livro que está na mesa é meu\", a oração destacada tem valor:",
+  options:["substantivo.","adjetivo (restritiva).","adverbial temporal.","adverbial causal.","substantiva completiva nominal."],
+  correct:1,
+  explanation:"A oração caracteriza e restringe \"o livro\" (especificamente o que está na mesa), tendo valor de adjetivo." },
+{ id:"s11", topic:"subordinadas", prova:false,
+  question:"\"Caso você precise de ajuda, me avise.\" A oração destacada expressa ideia de:",
+  options:["condição.","causa.","concessão.","finalidade.","comparação."],
+  correct:0,
+  explanation:"\"Caso\" é conjunção condicional, equivalente a \"se\", introduzindo uma hipótese." },
+{ id:"i7", topic:"interpretacao", prova:false,
+  question:"A ironia, como recurso de linguagem, consiste em:",
+  options:["dizer exatamente o que se pensa, sem duplo sentido.","dizer o contrário do que se pensa, criando um efeito crítico ou humorístico.","usar apenas frases muito curtas.","repetir a mesma palavra diversas vezes seguidas.","utilizar exclusivamente linguagem informal."],
+  correct:1,
+  explanation:"A ironia gera sentido pelo contraste entre o que é dito e o que realmente se quer comunicar, com efeito crítico ou cômico." },
+{ id:"i17", topic:"interpretacao", prova:false,
+  question:"A comparação (símile) se diferencia da metáfora porque:",
+  options:["não estabelece nenhuma relação entre os elementos.","utiliza um conectivo comparativo explícito, como \"como\" ou \"tal qual\".","é usada apenas em textos científicos.","elimina qualquer sentido figurado da frase.","ser usada apenas em bulas de remédio."],
+  correct:1,
+  explanation:"Na comparação, o conectivo (\"como\", \"tal qual\") deixa explícita a aproximação entre os dois elementos." },
+{ id:"s12", topic:"subordinadas", prova:false,
+  question:"\"Mesmo que estivesse cansado, terminou o trabalho.\" A oração destacada expressa ideia de:",
+  options:["concessão.","condição.","causa.","consequência.","finalidade."],
+  correct:0,
+  explanation:"\"Mesmo que\" introduz uma oração concessiva, indicando um obstáculo que não impediu o fato principal." },
+{ id:"p8", topic:"interpretacao", prova:true,
+  question:"Assinale a alternativa que descreve corretamente a mudança de sentimento de Rafael ao longo do texto.",
+  options:["Da irritação inicial para uma indiferença total ao final.","Do estranhamento inicial para uma aceitação gradual da nova rotina.","Do entusiasmo inicial para uma decepção crescente.","Da indiferença inicial para uma raiva cada vez maior.","Do medo inicial para uma recusa definitiva da regra."],
+  correct:1,
+  explanation:"Ao longo do texto, Rafael passa do estranhamento inicial (vazio no bolso) a uma aceitação gradual da nova rotina (passou a gostar da ideia)." },
+{ id:"s3", topic:"subordinadas", prova:false,
+  question:"\"Precisamos de que todos colaborem.\" A oração subordinada destacada é:",
+  options:["substantiva objetiva indireta.","substantiva predicativa.","adjetiva explicativa.","adverbial condicional.","adverbial temporal."],
+  correct:0,
+  explanation:"A oração completa o verbo \"precisar\", que exige a preposição \"de\" — por isso é objetiva indireta." },
+{ id:"p14", topic:"subordinadas", prova:true,
+  question:"Em \"Embora ainda sentisse falta de checar o celular, Rafael percebeu que os dias pareciam mais longos\", a conjunção \"embora\" introduz uma oração de sentido de:",
+  options:["causa.","concessão.","condição.","proporção.","consequência."],
+  correct:1,
+  explanation:"\"Embora\" é uma conjunção concessiva clássica, introduzindo ideia de oposição que não impede o fato principal." },
+{ id:"i1", topic:"interpretacao", prova:false,
+  question:"O que é a \"ideia central\" de um texto?",
+  options:["Qualquer informação secundária mencionada de passagem.","O assunto principal ao redor do qual as demais informações se organizam.","Sempre a última frase do texto.","Um exemplo isolado citado pelo autor.","A opinião pessoal do leitor sobre o tema abordado."],
+  correct:1,
+  explanation:"A ideia central é o núcleo do texto: o assunto que organiza e dá sentido às demais informações apresentadas." },
+{ id:"i12", topic:"interpretacao", prova:false,
+  question:"\"Coesão textual\" refere-se a:",
+  options:["a ligação lógica entre as ideias de um texto, geralmente por meio de conectivos.","o tamanho total do texto em número de palavras.","a quantidade de personagens de uma narrativa.","o uso exclusivo de linguagem formal.","a escolha do gênero textual do texto."],
+  correct:0,
+  explanation:"A coesão é a costura das ideias do texto, feita por conectivos, pronomes e outros recursos linguísticos." },
+{ id:"s2", topic:"subordinadas", prova:false,
+  question:"\"Eu espero que você entenda.\" Classifique a oração subordinada destacada.",
+  options:["substantiva objetiva direta.","substantiva subjetiva.","adjetiva restritiva.","adverbial final.","adjetiva explicativa."],
+  correct:0,
+  explanation:"A oração completa o sentido do verbo transitivo direto \"espero\" (espero o quê?), funcionando como objeto direto." },
+{ id:"s30", topic:"subordinadas", prova:false,
+  question:"Assinale a alternativa que apresenta uma oração subordinada substantiva completiva nominal.",
+  options:["\"Tenho medo de que ele se machuque.\"","\"O aluno que estudou passou.\"","\"Choveu tanto que alagou.\"","\"Ainda que chova, sairemos.\"","adjetiva explicativa."],
+  correct:0,
+  explanation:"A oração completa o sentido do nome \"medo\", regido pela preposição \"de\" — por isso é substantiva completiva nominal." },
+{ id:"p7", topic:"interpretacao", prova:true,
+  question:"O texto \"O celular na mochila\" pode ser classificado como uma crônica porque:",
+  options:["apresenta dados de uma pesquisa científica sobre o uso do celular.","narra uma situação do cotidiano associada a uma reflexão do narrador.","relata um fato histórico ocorrido na escola há muitos anos.","é construído inteiramente por meio de diálogos entre os personagens.","tem como principal objetivo divulgar uma notícia recente."],
+  correct:1,
+  explanation:"A crônica narra fatos do cotidiano associados a uma reflexão pessoal do narrador, exatamente o que ocorre no texto." },
+{ id:"p5", topic:"interpretacao", prova:true,
+  question:"No trecho \"como se tivesse perdido um braço\", a comparação usada pelo narrador tem a função de:",
+  options:["descrever um acidente sofrido por um dos alunos da turma.","enfatizar, de forma exagerada, a reação da turma diante da proibição.","explicar tecnicamente por que os celulares foram proibidos.","comparar o celular a uma parte do corpo humano de fato ausente.","justificar a decisão da diretora com base em um exemplo médico."],
+  correct:1,
+  explanation:"\"Como se tivesse perdido um braço\" é uma comparação hiperbólica que evidencia o exagero da reação da turma diante da proibição." },
+{ id:"s18", topic:"subordinadas", prova:false,
+  question:"Assinale a conjunção que normalmente introduz oração subordinada adverbial causal.",
+  options:["porque.","embora.","para que.","conforme.","contanto que."],
+  correct:0,
+  explanation:"\"Porque\" é a conjunção causal mais comum na língua portuguesa." },
+{ id:"s10", topic:"subordinadas", prova:false,
+  question:"\"Choveu tanto que a rua alagou.\" A oração destacada expressa ideia de:",
+  options:["causa.","consequência.","concessão.","proporção.","finalidade."],
+  correct:1,
+  explanation:"A estrutura \"tanto...que\" é típica da oração subordinada adverbial consecutiva, indicando o resultado do fato anterior." },
+{ id:"i10", topic:"interpretacao", prova:false,
+  question:"O foco narrativo em terceira pessoa se caracteriza por:",
+  options:["o narrador participar da história como personagem principal.","o narrador relatar os fatos sem participar diretamente da história.","o texto ser sempre escrito em forma de poema.","a ausência total de personagens na narrativa.","o uso exclusivo de verbos no imperativo."],
+  correct:1,
+  explanation:"No foco em terceira pessoa, o narrador observa e relata os fatos de fora, sem ser um dos personagens." },
+{ id:"s4", topic:"subordinadas", prova:false,
+  question:"\"Tenho certeza de que ele virá.\" A oração subordinada destacada é:",
+  options:["substantiva completiva nominal.","substantiva subjetiva.","adjetiva restritiva.","adverbial consecutiva.","adverbial condicional."],
+  correct:0,
+  explanation:"A oração completa o sentido do nome \"certeza\", regido pela preposição \"de\" — característica da completiva nominal." },
+{ id:"s24", topic:"subordinadas", prova:false,
+  question:"Em \"Ao chegar em casa, Rafael ligou a TV\", a oração destacada é um exemplo de oração subordinada:",
+  options:["desenvolvida, com valor temporal.","reduzida de infinitivo, com valor temporal.","reduzida de gerúndio, com valor causal.","substantiva objetiva direta.","substantiva predicativa."],
+  correct:1,
+  explanation:"\"Ao chegar\" é uma oração reduzida de infinitivo (sem conjunção explícita e com verbo no infinitivo), equivalente a \"Quando chegou em casa\", de valor temporal." },
+{ id:"p10", topic:"interpretacao", prova:true,
+  question:"Segundo o último parágrafo, a mudança percebida por Rafael após um mês sem o celular no intervalo foi que:",
+  options:["os dias na escola pareciam mais curtos e cansativos.","os dias na escola pareciam mais longos, no sentido de mais aproveitados.","ele passou a preferir ficar em casa a frequentar a escola.","ele decidiu pedir à diretora que revogasse a proibição.","ele parou de conversar com os colegas durante o intervalo."],
+  correct:1,
+  explanation:"O texto afirma que os dias pareciam mais longos \"no bom sentido\", ou seja, mais aproveitados — não mais cansativos ou curtos." },
+{ id:"p12", topic:"subordinadas", prova:true,
+  question:"Na oração \"que a escola guardaria os celulares dos alunos\", presente em \"a diretora anunciou que a escola guardaria os celulares\", a oração subordinada destacada é classificada como:",
+  options:["adjetiva restritiva.","substantiva objetiva direta.","adverbial causal.","substantiva subjetiva.","adjetiva explicativa."],
+  correct:1,
+  explanation:"A oração completa o sentido do verbo \"anunciou\" (anunciou o quê?), funcionando como objeto direto — por isso é substantiva objetiva direta." },
+{ id:"i6", topic:"interpretacao", prova:false,
+  question:"\"Conotação\" refere-se ao uso das palavras em seu:",
+  options:["sentido literal das palavras.","sentido figurado, que depende do contexto em que aparecem.","uso exclusivo em textos científicos.","total ausência de sentido.","ausência total de figuras de linguagem."],
+  correct:1,
+  explanation:"A conotação é o sentido figurado, que se constrói a partir do contexto e permite múltiplas interpretações." },
+{ id:"p18", topic:"subordinadas", prova:true,
+  question:"Em \"Rafael estudou tanto que tirou nota máxima na prova\", a oração destacada expressa ideia de:",
+  options:["causa.","consequência.","condição.","comparação.","finalidade."],
+  correct:1,
+  explanation:"A estrutura \"tanto que\" indica uma oração subordinada adverbial consecutiva, mostrando o resultado da ação anterior." },
+{ id:"p20", topic:"subordinadas", prova:true,
+  question:"Assinale a alternativa em que a oração subordinada destacada é classificada como adverbial conformativa.",
+  options:["\"Conforme o combinado, os celulares foram devolvidos ao final do dia.\"","\"Como estava atrasado, o aluno correu até a escola.\"","\"Ainda que chovesse, a aula aconteceria normalmente.\"","\"Assim que o sinal tocou, os alunos saíram apressados da sala.\"","\"À medida que os dias passavam, Rafael se acostumava com a rotina.\""],
+  correct:0,
+  explanation:"\"Conforme\" introduz uma oração subordinada adverbial conformativa, indicando que uma ação ocorre de acordo com outra." },
+{ id:"i15", topic:"interpretacao", prova:false,
+  question:"O gênero textual \"crônica\" costuma se caracterizar por:",
+  options:["apresentar leis e normas jurídicas.","narrar fatos do cotidiano com um olhar reflexivo ou bem-humorado.","ser sempre um texto extremamente longo e técnico.","apresentar apenas diálogos formais entre autoridades.","apresentar exclusivamente diálogos em verso."],
+  correct:1,
+  explanation:"A crônica costuma partir de situações simples do dia a dia para construir uma reflexão ou um efeito de humor." },
+{ id:"s8", topic:"subordinadas", prova:false,
+  question:"\"O sol, que é uma estrela, ilumina a Terra.\" A oração destacada:",
+  options:["restringe o significado da palavra \"sol\".","acrescenta uma característica geral, isolada por vírgulas.","funciona como sujeito da oração principal.","expressa ideia de condição.","expressa ideia de finalidade."],
+  correct:1,
+  explanation:"Isolada por vírgulas, a oração apenas acrescenta uma informação já conhecida sobre o sol, sem restringir seu sentido — por isso é explicativa." },
+{ id:"p1", topic:"interpretacao", prova:true,
+  question:"Qual é o principal assunto tratado no texto \"O celular na mochila\"?",
+  options:["A resistência dos professores diante das novas tecnologias na escola.","A reação de um aluno à proibição do uso do celular durante o intervalo.","A relação entre o desempenho escolar e o uso excessivo de celulares.","A opinião da diretora sobre o comportamento geral dos alunos.","Um desentendimento entre os alunos e os funcionários da cantina."],
+  correct:1,
+  explanation:"O texto inteiro gira em torno da reação de Rafael à proibição do celular no intervalo; as demais alternativas tratam de assuntos apenas tangenciais ou ausentes do texto." },
+{ id:"p19", topic:"subordinadas", prova:true,
+  question:"Assinale a conjunção que completa corretamente a frase \"Os alunos ficaram na sala ____________ terminar a prova\", com sentido de finalidade.",
+  options:["porque","embora","para que","já que","contanto que"],
+  correct:2,
+  explanation:"\"Para que\" é a conjunção que expressa finalidade de forma adequada ao contexto da frase." },
+{ id:"s21", topic:"subordinadas", prova:false,
+  question:"A principal diferença entre orações subordinadas substantivas e adjetivas é que:",
+  options:["as substantivas exercem função de substantivo, enquanto as adjetivas caracterizam um termo antecedente, como um adjetivo.","as substantivas nunca podem ser iniciadas pela palavra \"que\".","as adjetivas sempre aparecem sem vírgula no período.","não existe diferença real de função entre elas.","as adjetivas sempre exercem função de sujeito da oração principal."],
+  correct:0,
+  explanation:"As substantivas substituem/equivalem a um substantivo (sujeito, objeto etc.); as adjetivas caracterizam um termo já citado, como faria um adjetivo." },
+{ id:"i9", topic:"interpretacao", prova:false,
+  question:"Um texto dissertativo-argumentativo tem como principal objetivo:",
+  options:["narrar uma história com começo, meio e fim.","defender um ponto de vista por meio de argumentos.","descrever detalhadamente um ambiente ou objeto.","dar instruções para realizar uma tarefa.","narrar acontecimentos em ordem cronológica."],
+  correct:1,
+  explanation:"O texto dissertativo-argumentativo busca convencer o leitor de uma tese, sustentada por argumentos." },
+{ id:"s23", topic:"subordinadas", prova:false,
+  question:"As orações subordinadas adjetivas costumam ser introduzidas por:",
+  options:["conjunções coordenativas.","pronomes relativos, como \"que\", \"quem\", \"cujo\", \"onde\".","apenas advérbios de intensidade.","interjeições.","unicamente pela conjunção \"que\", nunca por outros pronomes."],
+  correct:1,
+  explanation:"Os pronomes relativos retomam um termo antecedente e introduzem a oração adjetiva que o caracteriza." },
+{ id:"s16", topic:"subordinadas", prova:false,
+  question:"\"Fizemos o trabalho conforme o professor havia orientado.\" A oração destacada expressa ideia de:",
+  options:["conformidade.","causa.","condição.","consequência.","temporal."],
+  correct:0,
+  explanation:"\"Conforme\" indica que uma ação segue o que foi determinado por outra — sentido de conformidade." },
+{ id:"i20", topic:"interpretacao", prova:false,
+  question:"Ao interpretar um texto, é fundamental que o leitor:",
+  options:["baseie suas respostas apenas em conhecimentos prévios, ignorando o texto.","busque respostas com base nas informações e pistas apresentadas pelo próprio texto.","responda de forma aleatória, sem justificativa.","desconsidere totalmente o gênero textual em questão.","responder com base apenas no título do texto."],
+  correct:1,
+  explanation:"A interpretação exige que as respostas estejam ancoradas no que o texto realmente diz, e não apenas em suposições externas a ele." },
+{ id:"p16", topic:"subordinadas", prova:true,
+  question:"Assinale a alternativa em que há oração subordinada adjetiva restritiva.",
+  options:["\"Rafael, que sempre checava as notificações, sentiu um vazio.\"","\"O aluno que chegou atrasado perdeu a primeira parte da explicação.\"","\"A diretora, que é rigorosa, anunciou a nova regra da escola.\"","\"O celular, que estava guardado na mochila, tocou durante a aula.\"","\"Meus colegas, que moram perto da escola, chegaram bem cedo.\""],
+  correct:1,
+  explanation:"Na alternativa b) não há vírgula separando a oração, o que indica caráter restritivo (define exatamente qual aluno); nas demais, as vírgulas indicam orações explicativas." },
+{ id:"s15", topic:"subordinadas", prova:false,
+  question:"\"Ele correu mais rápido do que o esperado.\" A oração destacada expressa ideia de:",
+  options:["comparação.","proporção.","conformidade.","concessão.","causa."],
+  correct:0,
+  explanation:"A estrutura comparativa \"mais...do que\" caracteriza a oração subordinada adverbial comparativa." },
+{ id:"i13", topic:"interpretacao", prova:false,
+  question:"\"Coerência textual\" refere-se a:",
+  options:["apenas à ortografia correta das palavras.","à relação lógica e ao sentido global que torna o texto compreensível.","ao número de parágrafos do texto.","exclusivamente à pontuação usada no texto.","à quantidade de adjetivos utilizados no texto."],
+  correct:1,
+  explanation:"A coerência diz respeito ao sentido geral do texto, à lógica interna que faz as ideias se sustentarem." },
+{ id:"i2", topic:"interpretacao", prova:false,
+  question:"Um texto que apresenta fatos comprováveis, sem opinião explícita do autor, tem caráter:",
+  options:["subjetivo.","dissertativo-argumentativo apenas.","objetivo.","exclusivamente poético.","poético, sempre repleto de metáforas."],
+  correct:2,
+  explanation:"Textos objetivos apresentam informações verificáveis, sem juízo de valor do autor — diferente dos textos subjetivos." },
+{ id:"s17", topic:"subordinadas", prova:false,
+  question:"\"À medida que o tempo passava, a plateia se cansava.\" A oração destacada expressa ideia de:",
+  options:["proporção.","causa.","condição.","finalidade.","concessão."],
+  correct:0,
+  explanation:"\"À medida que\" indica que dois fatos evoluem juntos, proporcionalmente — sentido de proporção." },
+{ id:"i4", topic:"interpretacao", prova:false,
+  question:"Fazer uma \"inferência\" durante a leitura significa:",
+  options:["Repetir literalmente uma informação do texto.","Tirar uma conclusão a partir de pistas do texto, mesmo sem ela estar dita explicitamente.","Cometer um erro de leitura.","Dar uma opinião pessoal sem nenhuma relação com o texto.","Sublinhar todas as palavras desconhecidas do texto."],
+  correct:1,
+  explanation:"Inferir é concluir algo com base em pistas textuais e no contexto, mesmo que a informação não esteja escrita de forma direta." },
+{ id:"s27", topic:"subordinadas", prova:false,
+  question:"Em \"Sabemos que a educação transforma vidas\", a oração subordinada destacada tem valor:",
+  options:["adjetivo.","substantivo (objetiva direta).","adverbial.","apositivo.","adjetiva restritiva."],
+  correct:1,
+  explanation:"A oração completa o verbo \"sabemos\" (sabemos o quê?), funcionando como objeto direto — valor substantivo." },
+{ id:"s6", topic:"subordinadas", prova:false,
+  question:"\"Só desejo uma coisa: que você seja feliz.\" A oração subordinada destacada é:",
+  options:["substantiva apositiva.","substantiva subjetiva.","adjetiva restritiva.","adverbial final.","adverbial causal."],
+  correct:0,
+  explanation:"A oração desenvolve e explica o termo \"uma coisa\", funcionando como um aposto." },
+{ id:"p2", topic:"interpretacao", prova:true,
+  question:"No trecho \"sentiu um vazio estranho no bolso da bermuda\", a expressão em destaque sugere que Rafael sentiu:",
+  options:["alívio por estar livre da distração do celular durante o intervalo.","indiferença diante da nova regra imposta pela escola.","a falta física de um objeto ao qual estava habituado.","medo de ser repreendido pela diretora por causa da regra.","curiosidade sobre o motivo que levou à nova proibição."],
+  correct:2,
+  explanation:"A expressão \"vazio estranho\" indica a sensação física de ausência de algo a que Rafael estava acostumado a carregar consigo — não alívio, medo ou curiosidade." },
+{ id:"i18", topic:"interpretacao", prova:false,
+  question:"Ao identificar o público-alvo de um texto, o leitor deve observar principalmente:",
+  options:["apenas o tamanho do texto.","a linguagem utilizada, o vocabulário e o contexto de circulação do texto.","o número de parágrafos.","a cor do papel em que o texto foi impresso.","exclusivamente a data de publicação do texto."],
+  correct:1,
+  explanation:"O público-alvo se revela pela escolha de vocabulário, grau de formalidade e veículo em que o texto circula." },
+{ id:"s29", topic:"subordinadas", prova:false,
+  question:"Assinale a alternativa correta sobre orações subordinadas adverbiais.",
+  options:["Elas sempre exercem função de sujeito da oração principal.","Elas exercem função de advérbio, indicando circunstâncias como tempo, causa, condição, entre outras.","Elas nunca podem aparecer na forma reduzida.","Elas sempre vêm obrigatoriamente antes da oração principal.","Elas sempre equivalem a um substantivo abstrato."],
+  correct:1,
+  explanation:"As adverbiais funcionam como um advérbio, acrescentando uma circunstância (tempo, causa, condição, concessão etc.) à oração principal." },
+{ id:"p6", topic:"interpretacao", prova:true,
+  question:"No trecho \"pelo menos por algumas horas\", ao final do texto, percebe-se que Rafael:",
+  options:["decidiu abandonar definitivamente o uso do celular.","ainda tinha reservas quanto à nova rotina, mas via algo positivo nela.","pretendia usar o celular apenas durante a noite, em casa.","discordava por completo da proibição imposta pela escola.","havia perdido totalmente o interesse por aparelhos eletrônicos."],
+  correct:1,
+  explanation:"A expressão final mostra que Rafael, mesmo com ressalvas, começou a enxergar um lado positivo em ficar sem o celular por algumas horas." },
+{ id:"s22", topic:"subordinadas", prova:false,
+  question:"Em um período composto por subordinação, a oração subordinada é aquela que:",
+  options:["depende sintaticamente da oração principal para ter sentido completo.","é sempre totalmente independente e tem sentido completo sozinha.","nunca é introduzida por conjunção ou pronome relativo.","equivale sempre a um advérbio de intensidade.","é sempre a primeira oração do período composto."],
+  correct:0,
+  explanation:"Por definição, a oração subordinada não tem autonomia sintática: ela depende da principal para formar sentido completo." },
+{ id:"p11", topic:"subordinadas", prova:true,
+  question:"Releia: \"Quando a diretora anunciou que a escola guardaria os celulares dos alunos durante o intervalo, a turma reagiu como se tivesse perdido um braço.\" A oração \"Quando a diretora anunciou...\" expressa, em relação à oração principal, ideia de:",
+  options:["causa.","tempo.","condição.","finalidade.","consequência."],
+  correct:1,
+  explanation:"A conjunção \"quando\" introduz uma oração subordinada adverbial temporal." },
+{ id:"p3", topic:"interpretacao", prova:true,
+  question:"De acordo com o segundo parágrafo, como os alunos reagiram nos primeiros dias sem o celular?",
+  options:["Organizaram um protesto formal contra a decisão da diretora.","Ficaram sem saber o que fazer, mas alguns redescobriram atividades esquecidas.","Passaram a dedicar o intervalo inteiro aos estudos.","Pediram autorização para trazer outro aparelho eletrônico no lugar do celular.","Ignoraram a proibição e continuaram usando o celular escondido."],
+  correct:1,
+  explanation:"O segundo parágrafo descreve alunos parados sem saber o que fazer e, ao mesmo tempo, alunos que redescobriram atividades como a queimada e a leitura." },
+{ id:"s20", topic:"subordinadas", prova:false,
+  question:"Assinale a conjunção que normalmente introduz oração subordinada adverbial condicional.",
+  options:["caso.","conforme.","que.","mesmo que.","porquanto."],
+  correct:0,
+  explanation:"\"Caso\" equivale a \"se\", introduzindo uma condição para que o fato principal ocorra." },
+{ id:"i3", topic:"interpretacao", prova:false,
+  question:"Quando o autor de um texto expressa opiniões, sentimentos e impressões pessoais, o texto tem caráter:",
+  options:["subjetivo.","científico.","informativo.","técnico.","normativo, com regras a serem seguidas."],
+  correct:0,
+  explanation:"Textos subjetivos carregam a visão pessoal de quem escreve, com opiniões e emoções explícitas." },
+{ id:"s13", topic:"subordinadas", prova:false,
+  question:"\"Estudou bastante a fim de que passasse no concurso.\" A oração destacada expressa ideia de:",
+  options:["finalidade.","causa.","condição.","comparação.","concessão."],
+  correct:0,
+  explanation:"\"A fim de que\" é uma locução conjuntiva final, indicando o objetivo da ação principal." },
+{ id:"p15", topic:"subordinadas", prova:true,
+  question:"Assinale a alternativa em que a oração destacada é classificada como substantiva subjetiva.",
+  options:["\"É importante que os alunos respeitem a regra da escola.\"","\"Rafael percebeu que os dias na escola pareciam mais longos.\"","\"A diretora anunciou que os celulares seriam guardados.\"","\"O fato é que a turma reclamou muito da nova regra.\"","\"Ele duvidava que a nova regra fosse funcionar bem.\""],
+  correct:0,
+  explanation:"Em \"É importante que os alunos respeitem a regra\", a oração subordinada funciona como sujeito da oração principal (o que é importante), caracterizando a subjetiva." },
+{ id:"i5", topic:"interpretacao", prova:false,
+  question:"\"Denotação\" refere-se ao uso das palavras em seu:",
+  options:["sentido figurado, que depende do contexto.","sentido literal, dicionarizado.","uso restrito a gírias regionais.","uso exclusivo em poemas.","uso obrigatório de aspas em toda a frase."],
+  correct:1,
+  explanation:"A denotação é o sentido literal, objetivo, das palavras — o significado registrado no dicionário." },
+{ id:"s14", topic:"subordinadas", prova:false,
+  question:"\"Assim que o professor chegou, a aula começou.\" A oração destacada expressa ideia de:",
+  options:["tempo.","causa.","condição.","consequência.","comparação."],
+  correct:0,
+  explanation:"\"Assim que\" indica simultaneidade/sucessão temporal entre os dois fatos." },
+{ id:"i11", topic:"interpretacao", prova:false,
+  question:"O foco narrativo em primeira pessoa se caracteriza por:",
+  options:["o narrador contar a história participando dela, usando \"eu\".","o narrador nunca se envolver emocionalmente com o enredo.","a história ser sempre verídica.","a ausência de diálogos entre personagens.","o uso exclusivo de linguagem técnica."],
+  correct:0,
+  explanation:"No foco em primeira pessoa, o narrador é também personagem da história e narra sob seu próprio ponto de vista." },
+{ id:"p17", topic:"subordinadas", prova:true,
+  question:"A oração destacada em \"Se os alunos devolvessem os celulares na entrada, o intervalo seria mais tranquilo\" expressa ideia de:",
+  options:["causa.","condição.","concessão.","finalidade.","tempo."],
+  correct:1,
+  explanation:"A conjunção \"se\" introduz uma oração subordinada adverbial condicional." },
+{ id:"p4", topic:"interpretacao", prova:true,
+  question:"O pé de goiaba, a merendeira que cumprimenta pelo nome e as piadas do colega de carteira são citados no texto para mostrar que:",
+  options:["a escola havia passado recentemente por uma reforma estrutural.","Rafael passou a perceber detalhes que antes não notava.","os alunos preferiam ficar no pátio a assistir às aulas.","a alimentação oferecida pela escola havia melhorado muito.","Rafael pretendia registrar uma reclamação contra a diretora."],
+  correct:1,
+  explanation:"Esses detalhes exemplificam justamente o que Rafael passou a perceber ao ficar sem o celular no intervalo." },
+{ id:"s26", topic:"subordinadas", prova:false,
+  question:"Em \"Terminado o trabalho, os alunos saíram\", a oração destacada é:",
+  options:["reduzida de particípio, com valor temporal.","reduzida de infinitivo, com valor final.","substantiva objetiva indireta.","adjetiva explicativa.","substantiva apositiva."],
+  correct:0,
+  explanation:"O verbo no particípio (\"terminado\"), sem conjunção, caracteriza a oração reduzida de particípio; aqui equivale a \"Quando o trabalho foi terminado\", de valor temporal." },
+{ id:"p13", topic:"subordinadas", prova:true,
+  question:"Em \"a turma reagiu como se tivesse perdido um braço\", a oração destacada expressa ideia de:",
+  options:["comparação.","consequência.","condição.","finalidade.","conformidade."],
+  correct:0,
+  explanation:"\"Como se\" introduz uma oração subordinada adverbial comparativa, de caráter hipotético." },
+{ id:"i19", topic:"interpretacao", prova:false,
+  question:"Um argumento de autoridade em um texto dissertativo-argumentativo consiste em:",
+  options:["usar dados estatísticos aleatórios, sem indicar a fonte.","citar a opinião ou pesquisa de um especialista reconhecido no assunto para sustentar uma ideia.","repetir a tese do texto diversas vezes.","ignorar completamente possíveis contra-argumentos.","apresentar apenas exemplos do cotidiano do autor."],
+  correct:1,
+  explanation:"O argumento de autoridade se apoia na credibilidade de um especialista ou de uma fonte reconhecida sobre o tema." },
+{ id:"s25", topic:"subordinadas", prova:false,
+  question:"Em \"Chegando cedo, evitaremos o trânsito\", a oração destacada é:",
+  options:["reduzida de infinitivo, com valor causal.","reduzida de gerúndio, com valor condicional.","reduzida de particípio, com valor temporal.","substantiva subjetiva.","adjetiva restritiva."],
+  correct:1,
+  explanation:"O verbo no gerúndio (\"chegando\") sem conjunção caracteriza a oração reduzida de gerúndio; aqui, equivale a \"Se chegarmos cedo\", de valor condicional." },
+{ id:"i16", topic:"interpretacao", prova:false,
+  question:"Uma metáfora consiste em:",
+  options:["comparar dois elementos usando um conectivo comparativo, como \"como\".","atribuir a algo a característica de outra coisa, sem conectivo comparativo, criando uma nova imagem.","repetir sons semelhantes no início das palavras.","usar exclusivamente números dentro de um texto.","empregar exclusivamente linguagem denotativa."],
+  correct:1,
+  explanation:"A metáfora funde dois elementos sem conectivo explícito, criando uma nova imagem de sentido — diferente da comparação, que usa \"como\"." },
+{ id:"s19", topic:"subordinadas", prova:false,
+  question:"Assinale a conjunção que normalmente introduz oração subordinada adverbial concessiva.",
+  options:["ainda que.","porque.","se.","à medida que.","para que."],
+  correct:0,
+  explanation:"\"Ainda que\" tem o mesmo valor de \"embora\", introduzindo ideia de concessão." },
+{ id:"p9", topic:"interpretacao", prova:true,
+  question:"Quanto ao tipo de narrador, o texto \"O celular na mochila\" apresenta:",
+  options:["narrador-personagem, pois participa da história como Rafael.","narrador onisciente, que narra em primeira pessoa do plural.","narrador-observador, que relata os fatos em terceira pessoa.","o próprio Rafael, narrando suas experiências em primeira pessoa.","narrador coletivo, que representa o ponto de vista da turma inteira."],
+  correct:2,
+  explanation:"O narrador relata os fatos e os pensamentos de Rafael em terceira pessoa (\"Rafael notou\", \"Rafael percebeu\"), sendo, portanto, observador." },
+{ id:"s5", topic:"subordinadas", prova:false,
+  question:"\"O importante é que todos participem.\" A oração subordinada destacada é:",
+  options:["substantiva predicativa.","substantiva objetiva direta.","adjetiva explicativa.","adverbial proporcional.","adverbial concessiva."],
+  correct:0,
+  explanation:"A oração funciona como predicativo do sujeito \"o importante\", ligada por um verbo de ligação." },
+{ id:"s7", topic:"subordinadas", prova:false,
+  question:"\"Os alunos que estudaram passaram na prova.\" A oração destacada:",
+  options:["restringe o sentido de \"alunos\", indicando apenas os que estudaram.","explica uma característica geral de todos os alunos.","funciona como objeto direto do verbo \"passaram\".","expressa ideia de causa.","expressa ideia de consequência."],
+  correct:0,
+  explanation:"Sem vírgula, a oração seleciona/restringe exatamente quais alunos passaram — os que estudaram." },
+{ id:"i14", topic:"interpretacao", prova:false,
+  question:"Uma frase \"ambígua\", em um texto, é aquela que:",
+  options:["admite mais de uma interpretação possível.","é totalmente destituída de sentido.","contém sempre um erro gramatical grave.","é um recurso exclusivo da linguagem científica.","sempre resultado de um erro de digitação."],
+  correct:0,
+  explanation:"Ambiguidade é a possibilidade de mais de uma leitura para a mesma frase, o que pode gerar duplo sentido." },
+{ id:"i8", topic:"interpretacao", prova:false,
+  question:"Um texto predominantemente narrativo se caracteriza por:",
+  options:["apresentar argumentos organizados para defender uma tese.","contar uma sucessão de fatos envolvendo personagens, tempo e espaço.","descrever minuciosamente as características de um objeto.","ensinar um procedimento passo a passo.","expor dados estatísticos de uma pesquisa."],
+  correct:1,
+  explanation:"A narração se define pela sucessão de fatos vividos por personagens, situados em um tempo e um espaço." },
+{ id:"s9", topic:"subordinadas", prova:false,
+  question:"\"Não fomos à festa porque estava chovendo muito.\" A oração destacada expressa ideia de:",
+  options:["causa.","consequência.","condição.","finalidade.","comparação."],
+  correct:0,
+  explanation:"\"Porque\" introduz uma oração subordinada adverbial causal, indicando o motivo do fato principal." },
+{ id:"s1", topic:"subordinadas", prova:false,
+  question:"\"É provável que chova amanhã.\" A oração subordinada destacada exerce função de:",
+  options:["sujeito da oração principal.","objeto direto.","predicativo do sujeito.","aposto.","complemento nominal."],
+  correct:0,
+  explanation:"A oração \"que chova amanhã\" é o sujeito de \"é provável\" — por isso é classificada como substantiva subjetiva." },
+];
+
+</script>
+<script>
+/* ====== RENDER & LOGIC ====== */
+
+const root = document.getElementById('questionsRoot');
+const STORAGE_KEY = 'revisional_orsub_v1';
+
+function loadState(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  }catch(e){ return {}; }
+}
+function saveState(state){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+let state = loadState();
+let currentFilter = 'todas';
+
+function tagLabel(topic){
+  return topic === 'interpretacao' ? 'Interpretação' : 'Orações Subordinadas';
+}
+
+function render(){
+  root.innerHTML = '';
+  QUESTIONS.forEach((q, idx) => {
+    if(currentFilter !== 'todas' && q.topic !== currentFilter) return;
+
+    const answer = state[q.id];
+    const card = document.createElement('div');
+    card.className = 'qcard ' + (answer ? (answer.correct ? 'answered-correct' : 'answered-wrong') : 'unanswered');
+
+    const meta = document.createElement('div');
+    meta.className = 'qmeta';
+    meta.innerHTML = `<span class="qnum">Q${idx+1}</span>
+      <span class="tag ${q.topic}">${tagLabel(q.topic)}</span>`;
+    card.appendChild(meta);
+
+    const qtext = document.createElement('p');
+    qtext.className = 'qtext';
+    qtext.textContent = q.question;
+    card.appendChild(qtext);
+
+    const optsWrap = document.createElement('div');
+    optsWrap.className = 'options';
+
+    q.options.forEach((optText, i) => {
+      const letter = String.fromCharCode(97 + i);
+      const btn = document.createElement('button');
+      btn.className = 'opt';
+      btn.innerHTML = `<span class="letter">${letter})</span><span>${optText}</span>`;
+
+      if(answer){
+        btn.classList.add('locked');
+        if(i === q.correct){ btn.classList.add('correct'); }
+        else if(i === answer.chosen){ btn.classList.add('wrong'); }
+        else{ btn.classList.add('dim'); }
+      }
+
+      btn.addEventListener('click', () => {
+        if(state[q.id]) return; // já respondida
+        const correct = i === q.correct;
+        state[q.id] = { chosen: i, correct };
+        saveState(state);
+        render();
+        updateStats();
+      });
+
+      optsWrap.appendChild(btn);
+    });
+    card.appendChild(optsWrap);
+
+    const fb = document.createElement('div');
+    fb.className = 'feedback ' + (answer ? (answer.correct ? 'correct show' : 'wrong show') : '');
+    if(answer){
+      fb.innerHTML = `<b>${answer.correct ? 'Certinho!' : 'Não é essa.'}</b>${q.explanation}`;
+    }
+    card.appendChild(fb);
+
+    root.appendChild(card);
+  });
+}
+
+function updateStats(){
+  const total = QUESTIONS.length;
+  const answeredIds = Object.keys(state);
+  const answered = answeredIds.length;
+  const correct = answeredIds.filter(id => state[id].correct).length;
+  document.getElementById('statAnswered').textContent = answered;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statCorrect').textContent = correct;
+  document.getElementById('progressFill').style.width = (total ? (answered/total*100) : 0) + '%';
+}
+
+document.getElementById('filters').addEventListener('click', (e) => {
+  const btn = e.target.closest('.filter-btn');
+  if(!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.filter;
+  render();
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(confirm('Isso vai apagar todo o seu progresso nesta revisão. Continuar?')){
+    state = {};
+    saveState(state);
+    render();
+    updateStats();
+  }
+});
+
+render();
+updateStats();
+</script>
+
+</body>
+</html>
